@@ -1,0 +1,61 @@
+# Só runtime VNC (legado / debug). Produção: docker/production/Dockerfile (app + VNC unificado).
+
+FROM node:20.9.0
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    DISPLAY=:99 \
+    SCREEN_WIDTH=1280 \
+    SCREEN_HEIGHT=720 \
+    SCREEN_DEPTH=24 \
+    CHROME_BIN=/usr/bin/google-chrome-stable
+
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    gnupg \
+    ca-certificates \
+    fonts-liberation \
+    libasound2 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libxss1 \
+    libgtk-3-0 \
+    libnss3 \
+    libxshmfence1 \
+    libxext6 \
+    libx11-6 \
+    libxtst6 \
+    libxrender1 \
+    libxcb1 \
+    libxfixes3 \
+    libxau6 \
+    libxdmcp6 \
+    libxinerama1 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libgbm1 \
+    xvfb \
+    dbus-x11 \
+    fluxbox \
+    novnc \
+    websockify \
+    x11-utils \
+    x11vnc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
+    apt-get update && \
+    apt-get install -y google-chrome-stable && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
+WORKDIR /app
+
+EXPOSE 5900 6080
