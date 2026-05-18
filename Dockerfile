@@ -1,13 +1,10 @@
-# Só runtime VNC (legado / debug). Produção: docker/production/Dockerfile (app + VNC unificado).
+# https://github.com/lipey1/puppeteer-node-xvfb-vnc — base Node + Chrome + Xvfb + VNC (sem CMD)
 
 FROM node:20.9.0
 
 ENV DEBIAN_FRONTEND=noninteractive \
     DISPLAY=:99 \
-    SCREEN_WIDTH=1280 \
-    SCREEN_HEIGHT=720 \
-    SCREEN_DEPTH=24 \
-    CHROME_BIN=/usr/bin/google-chrome-stable
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 RUN apt-get update && apt-get install -y \
     wget \
@@ -42,6 +39,7 @@ RUN apt-get update && apt-get install -y \
     novnc \
     websockify \
     x11-utils \
+    x11-xserver-utils \
     x11vnc \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -55,3 +53,7 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
+
+WORKDIR /app
+
+EXPOSE 7541 5900 6080
