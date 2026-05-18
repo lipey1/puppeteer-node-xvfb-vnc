@@ -50,10 +50,3 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     apt-get install -y google-chrome-stable && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-COPY start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
-
-WORKDIR /app
-
-EXPOSE 7541 5900 6080
