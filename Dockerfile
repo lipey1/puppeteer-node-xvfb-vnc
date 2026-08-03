@@ -1,4 +1,5 @@
 # https://github.com/lipey1/puppeteer-node-xvfb-vnc — base Node + Chrome + Xvfb + VNC (sem CMD)
+# + Python/Assinar (PAdES) para assinar PDFs no Vorcel
 
 FROM node:20.9.0
 
@@ -41,8 +42,23 @@ RUN apt-get update && apt-get install -y \
     x11-utils \
     x11-xserver-utils \
     x11vnc \
+    # --- Assinar (PAdES / OCR multa) ---
+    python3 \
+    python3-venv \
+    python3-pip \
+    tesseract-ocr \
+    tesseract-ocr-por \
+    libgl1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Venv do Assinar (código/certs vêm no volume ./assinar:/assinar em runtime)
+RUN python3 -m venv /opt/assinar-venv \
+    && /opt/assinar-venv/bin/pip install -U pip \
+    && /opt/assinar-venv/bin/pip install \
+        "pymupdf>=1.24.0" \
+        "pyHanko[image-support]>=0.35.0" \
+    && rm -rf /root/.cache/pip
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
     echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
