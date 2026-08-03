@@ -5,7 +5,9 @@ FROM node:20.9.0
 
 ENV DEBIAN_FRONTEND=noninteractive \
     DISPLAY=:99 \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
+    ASSINAR_PYTHON=/opt/assinar-venv/bin/python \
+    ASSINAR_VENV=/opt/assinar-venv
 
 RUN apt-get update && apt-get install -y \
     wget \
@@ -52,7 +54,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Venv do Assinar (código/certs vêm no volume ./assinar:/assinar em runtime)
+# Venv do Assinar (código/certs em /app/assinar via volume ./vorcel — sem volume extra no compose)
 RUN python3 -m venv /opt/assinar-venv \
     && /opt/assinar-venv/bin/pip install -U pip \
     && /opt/assinar-venv/bin/pip install \
